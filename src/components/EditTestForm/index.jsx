@@ -32,27 +32,27 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 );
 
 const EditTestForm = () => {
-    const navigate = useNavigate();
-    const {state} = useLocation()
-    const [name, setName] = useState(state.name);
-    const [shortName, setShortName] = useState(state.shortName);
-    const [isActive, setIsActive] = useState(state.isActive);
-    const [price, setPrice] = useState(state.price);
-    const [measurement, setMeasurement] = useState(state.measurement);
-    const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const [name, setName] = useState(state.name);
+  const [shortName, setShortName] = useState(state.shortName);
+  const [isActive, setIsActive] = useState(state.isActive);
+  const [price, setPrice] = useState(state.price);
+  const [measurement, setMeasurement] = useState(state.measurement);
+  const [error, setError] = useState("");
   const editTest = async (e) => {
     e.preventDefault();
     const test = await updateTest(state.id, {
       name,
       shortName,
       isActive,
-      price,
-      measurement
-    })
-    if(test.data) {
-      navigate('/test/viewTest')
+      price: parseFloat(price),
+      measurement,
+    });
+    if (test.data) {
+      navigate("/test/viewTest");
     }
-  }
+  };
   return (
     <Main>
       <div className="row">
@@ -128,7 +128,9 @@ const EditTestForm = () => {
                     multiline
                     maxRows={4}
                     defaultValue={JSON.stringify(state.measurement)}
-                    onChange={(event) => setMeasurement(JSON.parse(event.target.value))}
+                    onChange={(event) =>
+                      setMeasurement(JSON.parse(event.target.value))
+                    }
                   />
                 </div>
                 <button

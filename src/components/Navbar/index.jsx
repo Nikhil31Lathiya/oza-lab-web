@@ -23,7 +23,7 @@ import { Button, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore, Settings } from "@mui/icons-material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SummarizeIcon from "@mui/icons-material/Summarize";
-
+import LogoutIcon from "@mui/icons-material/Logout";
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -206,6 +206,12 @@ const NavBar = ({ open, setOpen }) => {
             <ListItemButton>
               <ListItemIcon>{<SummarizeIcon />}</ListItemIcon>
               <ListItemText primary={"Reports"} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key={1} disablePadding>
+            <ListItemButton onClick={() => navigate("/")}>
+              <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
+              <ListItemText primary={"Logout"} />
             </ListItemButton>
           </ListItem>
         </List>
