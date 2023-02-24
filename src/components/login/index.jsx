@@ -1,98 +1,111 @@
-import React from "react";
-import { LoginLogo } from "./loginImages";
+import { Button, TextField } from "@mui/material";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { LoginLogo } from "./LoginImages";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import axios from "axios";
+import { sendMail } from "../Actions/SendMail";
 
-const LoginPage = () => {
+const Login = () => {
+  localStorage.clear();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [otp, setOtp] = useState(null);
+  const [otpInput, setOtpInput] = useState(null);
+  const navigate = useNavigate();
+  const checkMailExists = async () => {
+    const mailExists = await axios.post("http://localhost:3000/user/byEmail", {
+      email: email,
+    });
+    return mailExists;
+  };
+  const login = async () => {
+    const mailExists = await checkMailExists();
+    if (mailExists.data.message) {
+      return setError("User Not Found. Please Sign Up");
+    }
+    if (!otp) {
+      const emailSend = await sendMail(email)
+      if (emailSend.data.sent && emailSend.data.otp) {
+        setError("Otp sent to the email address, please check your email");
+        return setOtp(emailSend.data.otp);
+      }
+    }
+    if (otp === parseInt(otpInput, 10)) {
+      console.log("otp matched!");
+      const token = await axios.post("http://localhost:3000/token", {
+        email: email,
+      });
+      console.log(token.data.token);
+      localStorage.setItem("authorization", token.data.token);
+      navigate("/dashboard");
+    } else {
+      setError("Incorrect otp. Please Try Again!");
+    }
+  };
   return (
-    <div className="container-scroller">
-      <div className="container-fluid page-body-wrapper full-page-wrapper">
-        <div className="content-wrapper d-flex align-items-stretch auth auth-img-bg">
-          <div className="row flex-grow">
-            <div className="col-lg-6 d-flex align-items-center justify-content-center">
-              <div className="auth-form-transparent text-left p-3">
-                <div className="brand-logo">
-                  <img src={LoginLogo} alt="logo" />
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-center auth px-0">
+          <div class="row w-100 mx-0">
+            <div class="col-lg-4 mx-auto">
+              <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+                <div class="brand-logo">
+                  {/* <img src={LoginLogo} alt="logo" /> */}
+                  <h3>OZA-LAB</h3>
                 </div>
-                <h4>Welcome back!</h4>
-                <h6 className="font-weight-light">Happy to see you again!</h6>
-                <form className="pt-3">
-                  <div className="form-group">
-                    <label for="exampleInputEmail">Username</label>
-                    <div className="input-group">
-                      <div className="input-group-prepend bg-transparent">
-                        <span className="input-group-text bg-transparent border-right-0">
-                          <i className="ti-user text-primary"></i>
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control form-control-lg border-left-0"
-                        id="exampleInputEmail"
-                        placeholder="Username"
-                      />
-                    </div>
+                <h6 class="font-weight-light">Sign in to continue.</h6>
+                <h6>{error}</h6>
+                <form class="pt-3">
+                  <div class="form-group">
+                    <TextField
+                      type="email"
+                      className="form-control form-control-lg"
+                      label="email"
+                      id="exampleInputEmail1"
+                      variant="outlined"
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        setError("")
+                      }}
+                    />
                   </div>
-                  <div className="form-group">
-                    <label for="exampleInputPassword">Password</label>
-                    <div className="input-group">
-                      <div className="input-group-prepend bg-transparent">
-                        <span className="input-group-text bg-transparent border-right-0">
-                          <i className="ti-lock text-primary"></i>
-                        </span>
-                      </div>
-                      <input
-                        type="password"
-                        className="form-control form-control-lg border-left-0"
-                        id="exampleInputPassword"
-                        placeholder="Password"
-                      />
-                    </div>
+                  <div
+                    class="form-group"
+                    style={otp ? {} : { display: "none" }}
+                  >
+                    <TextField
+                      type={"number"}
+                      id="exampleInputPassword1"
+                      label="OTP"
+                      variant="outlined"
+                      size="large"
+                      fullWidth
+                      onChange={(event) => {
+                        setOtpInput(event.target.value);
+                      }}
+                    />
                   </div>
-                  <div className="my-2 d-flex justify-content-between align-items-center">
-                    <div className="form-check">
-                      <label className="form-check-label text-muted">
-                        <input type="checkbox" className="form-check-input" />
-                        Keep me signed in
-                      </label>
-                    </div>
-                    <a href="#" className="auth-link text-black">
-                      Forgot password?
-                    </a>
-                  </div>
-                  <div className="my-3">
-                    <a
-                      className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
-                      href="../../index.html"
+                  <div class="mt-3">
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      fullWidth
+                      color="primary"
+                      onClick={login}
                     >
-                      LOGIN
-                    </a>
+                      SIGN IN
+                    </Button>
                   </div>
-                  <div className="mb-2 d-flex">
-                    <button
-                      type="button"
-                      className="btn btn-facebook auth-form-btn flex-grow me-1"
-                    >
-                      <i className="ti-facebook me-2"></i>Facebook
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-google auth-form-btn flex-grow ms-1"
-                    >
-                      <i className="ti-google me-2"></i>Google
-                    </button>
-                  </div>
-                  <div className="text-center mt-4 font-weight-light">
+                  <div class="text-center mt-4 font-weight-light">
                     Don't have an account?{" "}
-                    <a href="register-2.html" className="text-primary">
+                    <Link to="/signup" class="text-primary">
                       Create
-                    </a>
+                    </Link>
                   </div>
                 </form>
               </div>
-            </div>
-            <div className="col-lg-6 login-half-bg d-flex flex-row">
-              <p className="text-white font-weight-medium text-center flex-grow align-self-end">
-                Copyright &copy; 2021 All rights reserved.
-              </p>
             </div>
           </div>
         </div>
@@ -101,4 +114,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;

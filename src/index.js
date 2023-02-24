@@ -2,12 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import {RouterProvider} from 'react-router-dom'
+import router from "./routes";
 import "./assets/css/style.css";
+import "./assets/vendors/ti-icons/css/themify-icons.css"
+import "./assets/vendors/base/vendor.bundle.base.css"
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

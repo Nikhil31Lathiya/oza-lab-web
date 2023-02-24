@@ -1,2 +1,5 @@
-import LoginLogo from "../../assets/images/logo.svg";
-export { LoginLogo };
+import LoginLogo from '../../assets/images/logo.svg'
+
+export {
+    LoginLogo
+}
