@@ -24,6 +24,7 @@ import { ExpandLess, ExpandMore, Settings } from "@mui/icons-material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import LogoutIcon from "@mui/icons-material/Logout";
+import DescriptionIcon from "@mui/icons-material/Description";
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -85,12 +86,18 @@ const NavBar = ({ open, setOpen }) => {
   };
   const [openCollapse, setOpenCollapse] = React.useState(false);
   const [openTestCollapse, setOpenTestCollapse] = React.useState(false);
+  const [openReportsCollapse, setOpenReportsCollapse] = React.useState(false);
 
   function handleOpenSettings() {
     setOpenCollapse(!openCollapse);
   }
+
   function handleOpenTestsSettings() {
     setOpenTestCollapse(!openTestCollapse);
+  }
+
+  function handleOpenReportsSettings() {
+    setOpenReportsCollapse(!openReportsCollapse);
   }
 
   return (
@@ -202,12 +209,35 @@ const NavBar = ({ open, setOpen }) => {
               </ListItemButton>
             </List>
           </Collapse>
-          <ListItem key={1} disablePadding>
+          {/* <ListItem key={1} disablePadding>
             <ListItemButton>
               <ListItemIcon>{<SummarizeIcon />}</ListItemIcon>
               <ListItemText primary={"Reports"} />
             </ListItemButton>
+          </ListItem> */}
+          <ListItem button onClick={handleOpenReportsSettings}>
+            <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
+            <ListItemText primary="Reports" />
+            {openReportsCollapse ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
+          <Collapse in={openReportsCollapse} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton onClick={() => navigate("/reports/AddReport")}>
+                {/* <ListItemIcon>
+                  <PersonAddIcon />
+                </ListItemIcon> */}
+                <ListItemText inset primary="Create report" />
+              </ListItemButton>
+              <ListItemButton onClick={() => navigate("/reports/ViewReports")}>
+                {/* <ListItemIcon>
+                  <PersonAddIcon />
+                </ListItemIcon> */}
+                <ListItemText inset primary="View Reports" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+
+          {/* --------------- */}
           <ListItem key={1} disablePadding>
             <ListItemButton onClick={() => navigate("/")}>
               <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
