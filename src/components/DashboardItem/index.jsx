@@ -29,7 +29,6 @@ const DashboardItem = () => {
         setPatientCount(patientCount.data);
     } 
     getPatientCount();
-    console.log(patientCount);
   });
   return (
     <Main>

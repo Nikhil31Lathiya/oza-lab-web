@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
@@ -12,8 +12,6 @@ import DatePicker from "../DatePicker";
 import DropDown from "../Dropdown";
 import updatePatients from "../Actions/UpdatePatients";
 import deletePatients from "../Actions/DeletePatients";
-import viewTestAction from "../Actions/ViewTests";
-import GetTestById from "../Actions/GetTestById";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -35,43 +33,37 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const EditPatients = () => {
+const EditUsers = () => {
   const { state } = useLocation();
-  const [testsData, setTestsData] = useState([]);
-  const [test, setTest] = useState("");
-  useEffect(() => {
-    const testById = async () => {
-      const { data } = await GetTestById(state.testId);
-      setTest(data.name);
-    };
-    testById();
-  }, [state.testId]);
-  useEffect(() => {
-    const getTests = async () => {
-      const { data } = await viewTestAction();
-      setTestsData(data);
-      // const test = data.filter((item) => {
-      //   console.log(item.id === state.testId)
-      //   return item.id === state.testId;
-      // });
-      // console.log({ test });
-      // setTest(test[0].name);
-    };
-    getTests();
-  }, []);
-  const [homeVisit, setHomeVisit] = useState(
-    state.homeVisit === true ? "Yes" : "No"
-  );
+  const [title, setTitle] = useState(state.title);
+  const [firstName, setFirstName] = useState(state.firstName);
+  const [lastName, setLastName] = useState(state.lastName);
+  const [gender, setGender] = useState(state.gender);
+  const [contact, setContact] = useState(state.contact);
+  const [address, setAddress] = useState(state.address);
+  const [email, setEmail] = useState(state.email);
+  const [role, setRole] = useState(state.roleId === 1 ? "SUPER ADMIN" : state.roleId === 2 ? "ADMIN": "USER");
+  const [dob, setDob] = useState("");
+  const [otp, setOtp] = useState(null);
+  const [otpInput, setOtpInput] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  console.log("EditUser", state);
   const edit = async (e) => {
     e.preventDefault();
     const { data } = await updatePatients(state.id, {
-      homeVisit,
-      test,
+      title,
+      firstName,
+      lastName,
+      gender,
+      contact,
+      address,
+      email,
+      role
     });
+    console.log(data);
     if (data) {
-      navigate("/patient/viewPatient");
+      navigate("/user/viewUser");
     }
   };
 
@@ -81,27 +73,19 @@ const EditPatients = () => {
         <div class="col-12 grid-margin stretch-card">
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title">Edit Patient</h4>
+              <h4 class="card-title">Edit User</h4>
               <h4>{error}</h4>
 
               <form>
                 <div className="form-group">
                   <DropDown
-                    title={"Test"}
-                    data={testsData}
-                    tempState={test}
-                    setTempState={setTest}
+                    title={"title"}
+                    data={["mr", "mrs", "ms"]}
+                    tempState={state.title}
+                    setTempState={setTitle}
                   />
                 </div>
                 <div className="form-group">
-                  <DropDown
-                    title={"HomeVisit"}
-                    data={["Yes", "No"]}
-                    tempState={homeVisit}
-                    setTempState={setHomeVisit}
-                  />
-                </div>
-                {/* <div className="form-group">
                   <TextField
                     required={true}
                     type="text"
@@ -175,11 +159,16 @@ const EditPatients = () => {
                     variant="outlined"
                     onChange={(event) => setContact(event.target.value)}
                   />
-                </div> */}
+                </div>
+                
+                <div className="form-group">
+                    <DropDown title={'Role'} data={["SUPER ADMIN", "ADMIN", "USER"]} tempState={role} setTempState={setRole} />
+                </div>
+                
                 {/* <div className="form-group">
                   <DatePicker tempState={state.dob} setTempState={setDob} />
                 </div> */}
-                {/* <div className="form-group">
+                <div className="form-group">
                   <TextField
                     required={true}
                     id="outlined-multiline-flexible"
@@ -190,28 +179,13 @@ const EditPatients = () => {
                     defaultValue={state.address}
                     onChange={(event) => setAddress(event.target.value)}
                   />
-                </div> */}
-                {/* <div class="form-group" style={otp ? {} : { display: "none" }}>
-                  <TextField
-                    type={"text"}
-                    id="exampleInputPassword1"
-                    label="OTP"
-                    variant="outlined"
-                    size="large"
-                    required={true}
-                    fullWidth
-                    onChange={(event) => {
-                      setOtpInput(event.target.value);
-                    }}
-                  /> */}
-                {/* <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" /> */}
-                {/* </div> */}
+                </div>
                 <button
                   type="submit"
                   class="btn btn-primary me-2"
                   onClick={edit}
                 >
-                  Edit Patient
+                  Edit User
                 </button>
                 <button
                   class="btn btn-light"
@@ -228,4 +202,4 @@ const EditPatients = () => {
   );
 };
 
-export default EditPatients;
+export default EditUsers;

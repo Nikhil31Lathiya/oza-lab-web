@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { Main } from "../../pages/Dashboard";
 import { styled } from "@mui/material/styles";
-import { FormControlLabel, Radio, RadioGroup, TextField } from "@mui/material";
+import {
+  Button,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
 import DropDown from "../Dropdown";
 import DatePicker from "../DatePicker";
 import { FormLabel } from "react-bootstrap";
@@ -9,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { sendMail } from "../Actions/SendMail";
 import { MailExists } from "../Actions/MailExists";
 import addPatientAction from "../Actions/AddPatients";
+import viewTestAction from "../Actions/ViewTests";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -39,14 +46,24 @@ const AddPatientForm = () => {
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
+  const [homeVisit, setHomeVisit] = useState("");
   const [otp, setOtp] = useState(null);
   const [otpInput, setOtpInput] = useState(null);
   const [error, setError] = useState("");
+  const [tests, setTests] = useState([]);
+  const [testsInput, setTestsInput] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getTests = async () => {
+      const { data } = await viewTestAction();
+      setTests(data);
+    };
+    getTests();
+  }, []);
   const addPatient = async (e) => {
     e.preventDefault();
     const mailExists = await MailExists(email);
-    console.log(mailExists);
     if (!mailExists.data.message) {
       return setError("Email already exists");
     }
@@ -67,10 +84,11 @@ const AddPatientForm = () => {
         gender,
         contact,
         dob,
+        homeVisit,
+        testsInput,
       });
-      console.log(patient);
-      if(patient.data.user) {
-        navigate('/patient/viewPatient')
+      if (patient.data) {
+        navigate("/patient/viewPatient");
       }
     }
   };
@@ -79,6 +97,21 @@ const AddPatientForm = () => {
   };
   return (
     <Main>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+        }}
+      >
+        <Button
+          class="btn btn-primary me-2"
+          style={{ marginBottom: "10px", color: "#fff" }}
+          onClick={() => navigate("/patient/addPatient/existingUser")}
+        >
+          EXISTING USER ?
+        </Button>
+      </div>
       <div className="row">
         <div class="col-12 grid-margin stretch-card">
           <div class="card">
@@ -194,6 +227,22 @@ const AddPatientForm = () => {
                     }}
                   />
                   {/* <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" /> */}
+                </div>
+                <div class="form-group">
+                  <DropDown
+                    data={["Yes", "No"]}
+                    title={"Home Visit"}
+                    tempState={homeVisit}
+                    setTempState={setHomeVisit}
+                  />
+                </div>
+                <div class="form-group">
+                  <DropDown
+                    data={tests}
+                    title={"Tests"}
+                    tempState={testsInput}
+                    setTempState={setTestsInput}
+                  />
                 </div>
                 <button
                   type="submit"

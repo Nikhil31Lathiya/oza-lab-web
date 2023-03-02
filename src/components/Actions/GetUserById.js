@@ -1,6 +1,6 @@
 import axios from "axios";
-const GetTestById = async (id) => {
-  const patient = await axios.get(`http://localhost:3000/tests/${id}`, {
+const GetUserById = async (id) => {
+  const patient = await axios.get(`http://localhost:3000/user/${id}`, {
     headers: {
         authorization: localStorage.getItem('authorization')
     }
@@ -8,4 +8,4 @@ const GetTestById = async (id) => {
   return patient;
 };
 
-export default GetTestById;
+export default GetUserById;

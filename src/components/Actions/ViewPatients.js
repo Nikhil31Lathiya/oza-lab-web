@@ -1,11 +1,10 @@
 import axios from "axios";
 const viewPatientAction = async () => {
-  const patients = await axios.get("http://localhost:3000/user", {
+  const patients = await axios.get("http://localhost:3000/patients", {
     headers: {
         authorization: localStorage.getItem('authorization')
     }
   });
-  console.log(patients);
   return patients;
 };
 

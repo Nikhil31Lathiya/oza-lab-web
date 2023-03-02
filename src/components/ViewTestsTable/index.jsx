@@ -1,17 +1,17 @@
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   List,
   ListItem,
   ListItemText,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import viewPatientAction from "../Actions/ViewPatients";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import GetPatientById from "../Actions/GetPatientById";
 import { useNavigate } from "react-router-dom";
-import deletePatients from "../Actions/DeletePatients";
 import viewTestAction from "../Actions/ViewTests";
 import deleteTests from "../Actions/DeleteTests";
 import GetTestById from "../Actions/GetTestById";
@@ -28,7 +28,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    // marginLeft: `-${drawerWidth}px`,
     marginLeft: `240px`,
     ...(open && {
       transition: theme.transitions.create("margin", {
@@ -43,13 +42,14 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 const ViewTestsTable = () => {
   const [test, setTest] = useState([]);
   const [deleted, setDeleted] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [id, setId] = useState(null);
 
   const navigate = useNavigate();
   let sno = 0;
   useEffect(() => {
     const getTests = async () => {
       const test = await viewTestAction();
-      console.log(test.data);
       setTest(test.data);
     };
     getTests();
@@ -57,36 +57,57 @@ const ViewTestsTable = () => {
 
   const edit = async (id) => {
     const { data } = await GetTestById(id);
-    console.log(data);
     navigate("/test/viewTest/edit", { state: data });
   };
 
-  const deleteTest = async (id) => {
+  const deleteTest = (id) => {
+    setId(id);
+    setOpen(true);
+  };
+
+  const handleDelete = async () => {
     const { data } = await deleteTests(id);
-    console.log(data);
-    setDeleted(!deleted);
+    if (data) {
+      setDeleted(!deleted);
+      setOpen(false);
+    }
+  };
+
+  const handleClose = async (id) => {
+    setOpen(false);
   };
 
   return (
     <Main>
       <List>
         <ListItem>
-          <ListItemText style={style}><b>Sr No.</b></ListItemText>
-          <ListItemText style={style}><b>Name</b></ListItemText>
-          <ListItemText style={style}><b>Short Name</b></ListItemText>
-          <ListItemText style={style}><b>Price</b></ListItemText>
-          <ListItemText style={style}><b>Actions</b></ListItemText>
+          <ListItemText style={style}>
+            <b>Sr No.</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Name</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Short Name</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Price</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Is Active</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Actions</b>
+          </ListItemText>
         </ListItem>
         {test.map((test, index) => {
           return (
             <ListItem key={index}>
-              {/* <ListItemText style={style} hidden={true}>{patient.id}</ListItemText> */}
               <ListItemText style={style}>{(sno += 1)}</ListItemText>
-              <ListItemText style={style}>
-                {test.name}
-              </ListItemText>
+              <ListItemText style={style}>{test.name}</ListItemText>
               <ListItemText style={style}>{test.shortName}</ListItemText>
               <ListItemText style={style}>{test.price}</ListItemText>
+              <ListItemText style={style}>{test.isActive === true ? 'Active' : 'InActive'}</ListItemText>
               <ListItemText style={style}>
                 <Button onClick={() => edit(test.id)}>
                   <EditIcon />
@@ -94,6 +115,24 @@ const ViewTestsTable = () => {
                 <Button onClick={() => deleteTest(test.id)}>
                   <DeleteIcon />
                 </Button>
+                <Dialog
+                  style={{ margin: "20px" }}
+                  className="custom-modal-dialog"
+                  open={open}
+                  keepMounted
+                  onClose={handleClose}
+                  aria-describedby="alert-dialog-slide-description"
+                >
+                  <DialogTitle>
+                    {"Are you sure you want to delete this Test?"}
+                  </DialogTitle>
+                  <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={() => handleDelete()}>
+                      Confirm Delete
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </ListItemText>
             </ListItem>
           );

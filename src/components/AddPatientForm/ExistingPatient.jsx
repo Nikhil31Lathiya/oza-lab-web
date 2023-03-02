@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+// import { Main } from "../../pages/Dashboard";
 import { styled } from "@mui/material/styles";
 import {
+  Button,
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
   TextField,
 } from "@mui/material";
-import DatePicker from "../DatePicker";
 import DropDown from "../Dropdown";
-import updatePatients from "../Actions/UpdatePatients";
-import deletePatients from "../Actions/DeletePatients";
+import DatePicker from "../DatePicker";
+import { FormLabel } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { sendMail } from "../Actions/SendMail";
+import { MailExists } from "../Actions/MailExists";
+import addPatientAction from "../Actions/AddPatients";
 import viewTestAction from "../Actions/ViewTests";
-import GetTestById from "../Actions/GetTestById";
+import AddExistingPatientAction from "../Actions/AddExistingPatient";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -35,72 +38,80 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const EditPatients = () => {
-  const { state } = useLocation();
-  const [testsData, setTestsData] = useState([]);
-  const [test, setTest] = useState("");
-  useEffect(() => {
-    const testById = async () => {
-      const { data } = await GetTestById(state.testId);
-      setTest(data.name);
-    };
-    testById();
-  }, [state.testId]);
+const AddExistingPatientForm = () => {
+  //   const [title, setTitle] = useState("");
+  //   const [firstName, setFirstName] = useState("");
+  //   const [lastName, setLastName] = useState("");
+  //   const [gender, setGender] = useState("female");
+  //   const [contact, setContact] = useState("");
+  //   const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [open, setOpen] = useState(false);
+  //   const [dob, setDob] = useState("");
+  const [homeVisit, setHomeVisit] = useState("");
+  const [otp, setOtp] = useState(null);
+  const [otpInput, setOtpInput] = useState(null);
+  const [error, setError] = useState("");
+  const [tests, setTests] = useState([]);
+  const [testsInput, setTestsInput] = useState("");
+  const navigate = useNavigate();
+
   useEffect(() => {
     const getTests = async () => {
       const { data } = await viewTestAction();
-      setTestsData(data);
-      // const test = data.filter((item) => {
-      //   console.log(item.id === state.testId)
-      //   return item.id === state.testId;
-      // });
-      // console.log({ test });
-      // setTest(test[0].name);
+      setTests(data);
     };
     getTests();
   }, []);
-  const [homeVisit, setHomeVisit] = useState(
-    state.homeVisit === true ? "Yes" : "No"
-  );
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const edit = async (e) => {
+  const addPatient = async (e) => {
     e.preventDefault();
-    const { data } = await updatePatients(state.id, {
-      homeVisit,
-      test,
-    });
-    if (data) {
-      navigate("/patient/viewPatient");
+    const mailExists = await MailExists(email);
+    if (mailExists.data.message) {
+      return setError("Email does not exists");
+    }
+    if (open === false && !otp) {
+      const emailSend = await sendMail(email);
+      if (emailSend.data.sent && emailSend.data.otp) {
+        setError("Otp sent to the email address, please check your email");
+        setOpen(true);
+        return setOtp(emailSend.data.otp);
+      }
+    }
+    if (otp === parseInt(otpInput, 10)) {
+      const patient = await AddExistingPatientAction({
+        email,
+        homeVisit,
+        testsInput,
+      });
+      if (patient.data) {
+        navigate("/patient/viewPatient");
+      }
     }
   };
-
+  const cancelAddPatient = () => {
+    navigate("/patient/addPatient");
+  };
   return (
     <Main>
+      {/* <div style={{display: 'flex', alignItems:'flex-start', justifyContent:'flex-start'}}>
+        <Button class="btn btn-primary me-2" style={{marginBottom: '10px', color :'#fff'}}>EXISTING USER</Button>
+      </div> */}
       <div className="row">
         <div class="col-12 grid-margin stretch-card">
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title">Edit Patient</h4>
+              <h4 class="card-title">Add Existing Patient</h4>
               <h4>{error}</h4>
 
               <form>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <DropDown
-                    title={"Test"}
-                    data={testsData}
-                    tempState={test}
-                    setTempState={setTest}
+                    title={"title"}
+                    data={["mr", "mrs", "ms"]}
+                    tempState={title}
+                    setTempState={setTitle}
                   />
-                </div>
-                <div className="form-group">
-                  <DropDown
-                    title={"HomeVisit"}
-                    data={["Yes", "No"]}
-                    tempState={homeVisit}
-                    setTempState={setHomeVisit}
-                  />
-                </div>
+                </div> */}
                 {/* <div className="form-group">
                   <TextField
                     required={true}
@@ -108,29 +119,27 @@ const EditPatients = () => {
                     className="form-control form-control-lg"
                     label="First Name"
                     variant="outlined"
-                    defaultValue={state.firstName}
                     onChange={(event) => setFirstName(event.target.value)}
                   />
-                </div>
-                <div className="form-group">
+                </div> */}
+                {/* <div className="form-group">
                   <TextField
                     required={true}
                     type="text"
                     className="form-control form-control-lg"
                     label="Last Name"
                     variant="outlined"
-                    defaultValue={state.lastName}
                     onChange={(event) => setLastName(event.target.value)}
                   />
-                </div>
-                <div className="form-group">
+                </div> */}
+                {/* <div className="form-group">
                   <FormLabel id="demo-row-radio-buttons-group-label">
                     Gender
                   </FormLabel>
                   <RadioGroup
                     row
                     aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue={state.gender}
+                    defaultValue="female"
                     name="radio-buttons-group"
                     onChange={(event) => setGender(event.target.value)}
                   >
@@ -150,7 +159,7 @@ const EditPatients = () => {
                       label="Other"
                     />
                   </RadioGroup>
-                </div>
+                </div> */}
                 <div className="form-group">
                   <TextField
                     required={true}
@@ -158,26 +167,25 @@ const EditPatients = () => {
                     className="form-control form-control-lg"
                     label="email"
                     variant="outlined"
-                    defaultValue={state.email}
                     onChange={(event) => {
                       setError("");
                       setEmail(event.target.value);
                     }}
                   />
                 </div>
-                <div className="form-group">
+
+                {/* <div className="form-group">
                   <TextField
                     required={true}
                     type="contact"
                     className="form-control form-control-lg"
                     label="Contact"
-                    defaultValue={state.contact}
                     variant="outlined"
                     onChange={(event) => setContact(event.target.value)}
                   />
                 </div> */}
                 {/* <div className="form-group">
-                  <DatePicker tempState={state.dob} setTempState={setDob} />
+                  <DatePicker tempState={dob} setTempState={setDob} />
                 </div> */}
                 {/* <div className="form-group">
                   <TextField
@@ -187,7 +195,6 @@ const EditPatients = () => {
                     label="Address"
                     multiline
                     maxRows={4}
-                    defaultValue={state.address}
                     onChange={(event) => setAddress(event.target.value)}
                   />
                 </div> */}
@@ -206,17 +213,46 @@ const EditPatients = () => {
                   /> */}
                 {/* <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" /> */}
                 {/* </div> */}
+                {open && (
+                  <div>
+                    <div className="form-group">
+                      <TextField
+                        required={true}
+                        type="text"
+                        className="form-control form-control-lg"
+                        label="OTP"
+                        variant="outlined"
+                        onChange={(event) => {
+                          setOtpInput(event.target.value);
+                        }}
+                      />
+                    </div>
+                    <div class="form-group">
+                      <DropDown
+                        data={["Yes", "No"]}
+                        title={"Home Visit"}
+                        tempState={homeVisit}
+                        setTempState={setHomeVisit}
+                      />
+                    </div>
+                    <div class="form-group">
+                      <DropDown
+                        data={tests}
+                        title={"Tests"}
+                        tempState={testsInput}
+                        setTempState={setTestsInput}
+                      />
+                    </div>
+                  </div>
+                )}
                 <button
                   type="submit"
                   class="btn btn-primary me-2"
-                  onClick={edit}
+                  onClick={addPatient}
                 >
-                  Edit Patient
+                  {open ? "Add Patient" : "Verify Email"}
                 </button>
-                <button
-                  class="btn btn-light"
-                  onClick={() => navigate("/patient/viewPatient")}
-                >
+                <button class="btn btn-light" onClick={cancelAddPatient}>
                   Cancel
                 </button>
               </form>
@@ -228,4 +264,4 @@ const EditPatients = () => {
   );
 };
 
-export default EditPatients;
+export default AddExistingPatientForm;

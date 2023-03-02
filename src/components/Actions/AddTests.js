@@ -1,6 +1,5 @@
 import axios from "axios";
 const AddTestAction = async (testBody) => {
-  console.log({ testBody });
   const test = await axios.post(
     "http://localhost:3000/tests",
     {
@@ -12,7 +11,6 @@ const AddTestAction = async (testBody) => {
       },
     }
   );
-  console.log(test);
   return test;
 };
 

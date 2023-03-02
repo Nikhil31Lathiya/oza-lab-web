@@ -50,7 +50,6 @@ const RegistrationForm = () => {
       }
     }
     if (otp === parseInt(otpInput, 10)) {
-      console.log("otp matched!");
       const signUpObject = {
         email,
         title,
