@@ -1,9 +1,10 @@
 import axios from "axios";
-const AddTestAction = async (testBody) => {
+const AddUserReportAction = async (userReportBody) => {
+  console.log({ userReportBody });
   const test = await axios.post(
-    "http://localhost:3000/tests",
+    "http://localhost:3000/userReport",
     {
-      ...testBody,
+      ...userReportBody,
     },
     {
       headers: {
@@ -14,4 +15,4 @@ const AddTestAction = async (testBody) => {
   return test;
 };
 
-export default AddTestAction;
+export default AddUserReportAction;

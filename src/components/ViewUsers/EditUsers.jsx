@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from "react";
-// import { Main } from "../../pages/Dashboard";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
-  Button,
   FormControlLabel,
+  FormLabel,
   Radio,
   RadioGroup,
   TextField,
 } from "@mui/material";
-import DropDown from "../Dropdown";
 import DatePicker from "../DatePicker";
-import { FormLabel } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import DropDown from "../Dropdown";
+import updatePatients from "../Actions/UpdatePatients";
+import deletePatients from "../Actions/DeletePatients";
+import updateUser from "../Actions/UpdateUser";
 import { sendMail } from "../Actions/SendMail";
-import { MailExists } from "../Actions/MailExists";
-import addPatientAction from "../Actions/AddPatients";
-import viewTestAction from "../Actions/ViewTests";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -37,96 +35,63 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const AddPatientForm = () => {
-  const [title, setTitle] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [gender, setGender] = useState("female");
-  const [contact, setContact] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
+const EditUsers = () => {
+  const { state } = useLocation();
+  const [title, setTitle] = useState(state.title);
+  const [firstName, setFirstName] = useState(state.firstName);
+  const [lastName, setLastName] = useState(state.lastName);
+  const [gender, setGender] = useState(state.gender);
+  const [contact, setContact] = useState(state.contact);
+  const [address, setAddress] = useState(state.address);
+  const [email, setEmail] = useState(state.email);
+  const [role, setRole] = useState(
+    state.roleId === 1 ? "SUPER ADMIN" : state.roleId === 2 ? "ADMIN" : "USER"
+  );
   const [dob, setDob] = useState("");
-  const [homeVisit, setHomeVisit] = useState("");
   const [otp, setOtp] = useState(null);
   const [otpInput, setOtpInput] = useState(null);
   const [error, setError] = useState("");
-  const [tests, setTests] = useState([]);
-  const [testsInput, setTestsInput] = useState("");
-  const [disabled, setDisabled] = useState(false)
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const getTests = async () => {
-      const { data } = await viewTestAction();
-      setTests(data);
-    };
-    getTests();
-  }, []);
-  const addPatient = async (e) => {
+  console.log("EditUser", state);
+  const edit = async (e) => {
     e.preventDefault();
-    setDisabled(true);
-    const mailExists = await MailExists(email);
-    if (!mailExists.data.message) {
-      setDisabled(false);
-      return setError("Email already exists");
-    }
     if (!otp) {
       setError("Sending Otp to the email. please wait.");
       const emailSend = await sendMail(email);
       if (emailSend.data.sent && emailSend.data.otp) {
         setError("Otp sent to the email address, please check your email");
-        setDisabled(false);
         return setOtp(emailSend.data.otp);
       } else {
-        setDisabled(false);
         setError(
           "Something went wrong while sending the email. Please try again"
         );
       }
     }
     if (otp === parseInt(otpInput, 10)) {
-      const patient = await addPatientAction({
-        email,
+      const { data } = await updateUser(state.id, {
         title,
         firstName,
         lastName,
-        address,
         gender,
         contact,
-        dob,
-        homeVisit,
-        testsInput,
+        address,
+        email,
+        role,
       });
-      if (patient.data) {
-        navigate("/patient/viewPatient");
+      console.log(data);
+      if (data) {
+        navigate("/user/viewUser");
       }
     }
   };
-  const cancelAddPatient = () => {
-    navigate("/patient/addPatient");
-  };
+
   return (
     <Main>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-        }}
-      >
-        <Button
-          class="btn btn-primary me-2"
-          style={{ marginBottom: "10px", color: "#fff" }}
-          onClick={() => navigate("/patient/addPatient/existingUser")}
-        >
-          EXISTING USER ?
-        </Button>
-      </div>
       <div className="row">
         <div class="col-12 grid-margin stretch-card">
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title">Add Patient</h4>
+              <h4 class="card-title">Edit User</h4>
               <h4>{error}</h4>
 
               <form>
@@ -134,7 +99,7 @@ const AddPatientForm = () => {
                   <DropDown
                     title={"title"}
                     data={["mr", "mrs", "ms"]}
-                    tempState={title}
+                    tempState={state.title}
                     setTempState={setTitle}
                   />
                 </div>
@@ -145,6 +110,7 @@ const AddPatientForm = () => {
                     className="form-control form-control-lg"
                     label="First Name"
                     variant="outlined"
+                    defaultValue={state.firstName}
                     onChange={(event) => setFirstName(event.target.value)}
                   />
                 </div>
@@ -155,6 +121,7 @@ const AddPatientForm = () => {
                     className="form-control form-control-lg"
                     label="Last Name"
                     variant="outlined"
+                    defaultValue={state.lastName}
                     onChange={(event) => setLastName(event.target.value)}
                   />
                 </div>
@@ -165,7 +132,7 @@ const AddPatientForm = () => {
                   <RadioGroup
                     row
                     aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue="female"
+                    defaultValue={state.gender}
                     name="radio-buttons-group"
                     onChange={(event) => setGender(event.target.value)}
                   >
@@ -193,6 +160,7 @@ const AddPatientForm = () => {
                     className="form-control form-control-lg"
                     label="email"
                     variant="outlined"
+                    defaultValue={state.email}
                     onChange={(event) => {
                       setError("");
                       setEmail(event.target.value);
@@ -205,13 +173,24 @@ const AddPatientForm = () => {
                     type="contact"
                     className="form-control form-control-lg"
                     label="Contact"
+                    defaultValue={state.contact}
                     variant="outlined"
                     onChange={(event) => setContact(event.target.value)}
                   />
                 </div>
+
                 <div className="form-group">
-                  <DatePicker tempState={dob} setTempState={setDob} />
+                  <DropDown
+                    title={"Role"}
+                    data={["SUPER ADMIN", "ADMIN", "USER"]}
+                    tempState={role}
+                    setTempState={setRole}
+                  />
                 </div>
+
+                {/* <div className="form-group">
+                  <DatePicker tempState={state.dob} setTempState={setDob} />
+                </div> */}
                 <div className="form-group">
                   <TextField
                     required={true}
@@ -220,6 +199,7 @@ const AddPatientForm = () => {
                     label="Address"
                     multiline
                     maxRows={4}
+                    defaultValue={state.address}
                     onChange={(event) => setAddress(event.target.value)}
                   />
                 </div>
@@ -236,33 +216,18 @@ const AddPatientForm = () => {
                       setOtpInput(event.target.value);
                     }}
                   />
-                  {/* <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" /> */}
-                </div>
-                <div class="form-group">
-                  <DropDown
-                    data={["Yes", "No"]}
-                    title={"Home Visit"}
-                    tempState={homeVisit}
-                    setTempState={setHomeVisit}
-                  />
-                </div>
-                <div class="form-group">
-                  <DropDown
-                    data={tests}
-                    title={"Tests"}
-                    tempState={testsInput}
-                    setTempState={setTestsInput}
-                  />
                 </div>
                 <button
                   type="submit"
                   class="btn btn-primary me-2"
-                  onClick={addPatient}
-                  disabled={disabled}
+                  onClick={edit}
                 >
-                  Add Patient
+                  Edit User
                 </button>
-                <button class="btn btn-light" onClick={cancelAddPatient}>
+                <button
+                  class="btn btn-light"
+                  onClick={() => navigate("/patient/viewPatient")}
+                >
                   Cancel
                 </button>
               </form>
@@ -274,4 +239,4 @@ const AddPatientForm = () => {
   );
 };
 
-export default AddPatientForm;
+export default EditUsers;

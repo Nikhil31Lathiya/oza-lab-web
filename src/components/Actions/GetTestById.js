@@ -1,11 +1,11 @@
 import axios from "axios";
 const GetTestById = async (id) => {
+  console.log({ id });
   const patient = await axios.get(`http://localhost:3000/tests/${id}`, {
     headers: {
-        authorization: localStorage.getItem('authorization')
-    }
+      authorization: localStorage.getItem("authorization"),
+    },
   });
-  console.log(patient);
   return patient;
 };
 

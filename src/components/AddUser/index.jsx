@@ -1,21 +1,13 @@
-import React, { useEffect, useState } from "react";
-// import { Main } from "../../pages/Dashboard";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import {
-  Button,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from "@mui/material";
+import { FormControlLabel, Radio, RadioGroup, TextField } from "@mui/material";
 import DropDown from "../Dropdown";
 import DatePicker from "../DatePicker";
 import { FormLabel } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { sendMail } from "../Actions/SendMail";
 import { MailExists } from "../Actions/MailExists";
-import addPatientAction from "../Actions/AddPatients";
-import viewTestAction from "../Actions/ViewTests";
+import addUserAction from "../Actions/AddUsers";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -37,8 +29,9 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const AddPatientForm = () => {
+const AddUserForm = () => {
   const [title, setTitle] = useState("");
+  const [role, setRole] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("female");
@@ -46,28 +39,14 @@ const AddPatientForm = () => {
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
-  const [homeVisit, setHomeVisit] = useState("");
   const [otp, setOtp] = useState(null);
   const [otpInput, setOtpInput] = useState(null);
   const [error, setError] = useState("");
-  const [tests, setTests] = useState([]);
-  const [testsInput, setTestsInput] = useState("");
-  const [disabled, setDisabled] = useState(false)
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const getTests = async () => {
-      const { data } = await viewTestAction();
-      setTests(data);
-    };
-    getTests();
-  }, []);
   const addPatient = async (e) => {
     e.preventDefault();
-    setDisabled(true);
     const mailExists = await MailExists(email);
     if (!mailExists.data.message) {
-      setDisabled(false);
       return setError("Email already exists");
     }
     if (!otp) {
@@ -75,17 +54,15 @@ const AddPatientForm = () => {
       const emailSend = await sendMail(email);
       if (emailSend.data.sent && emailSend.data.otp) {
         setError("Otp sent to the email address, please check your email");
-        setDisabled(false);
         return setOtp(emailSend.data.otp);
       } else {
-        setDisabled(false);
         setError(
           "Something went wrong while sending the email. Please try again"
         );
       }
     }
     if (otp === parseInt(otpInput, 10)) {
-      const patient = await addPatientAction({
+      const patient = await addUserAction({
         email,
         title,
         firstName,
@@ -94,39 +71,20 @@ const AddPatientForm = () => {
         gender,
         contact,
         dob,
-        homeVisit,
-        testsInput,
+        role,
       });
-      if (patient.data) {
-        navigate("/patient/viewPatient");
+      if (patient.data.user) {
+        navigate("/user/viewUser");
       }
     }
   };
-  const cancelAddPatient = () => {
-    navigate("/patient/addPatient");
-  };
   return (
     <Main>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-        }}
-      >
-        <Button
-          class="btn btn-primary me-2"
-          style={{ marginBottom: "10px", color: "#fff" }}
-          onClick={() => navigate("/patient/addPatient/existingUser")}
-        >
-          EXISTING USER ?
-        </Button>
-      </div>
       <div className="row">
         <div class="col-12 grid-margin stretch-card">
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title">Add Patient</h4>
+              <h4 class="card-title">Add User</h4>
               <h4>{error}</h4>
 
               <form>
@@ -200,6 +158,14 @@ const AddPatientForm = () => {
                   />
                 </div>
                 <div className="form-group">
+                  <DropDown
+                    title={"Role"}
+                    data={["SUPER ADMIN", "ADMIN", "USER"]}
+                    tempState={role}
+                    setTempState={setRole}
+                  />
+                </div>
+                <div className="form-group">
                   <TextField
                     required={true}
                     type="contact"
@@ -238,32 +204,12 @@ const AddPatientForm = () => {
                   />
                   {/* <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" /> */}
                 </div>
-                <div class="form-group">
-                  <DropDown
-                    data={["Yes", "No"]}
-                    title={"Home Visit"}
-                    tempState={homeVisit}
-                    setTempState={setHomeVisit}
-                  />
-                </div>
-                <div class="form-group">
-                  <DropDown
-                    data={tests}
-                    title={"Tests"}
-                    tempState={testsInput}
-                    setTempState={setTestsInput}
-                  />
-                </div>
                 <button
                   type="submit"
                   class="btn btn-primary me-2"
                   onClick={addPatient}
-                  disabled={disabled}
                 >
-                  Add Patient
-                </button>
-                <button class="btn btn-light" onClick={cancelAddPatient}>
-                  Cancel
+                  Add User
                 </button>
               </form>
             </div>
@@ -274,4 +220,4 @@ const AddPatientForm = () => {
   );
 };
 
-export default AddPatientForm;
+export default AddUserForm;

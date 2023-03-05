@@ -1,7 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LoginLogo } from "./LoginImages";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
@@ -13,6 +12,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [otp, setOtp] = useState(null);
   const [otpInput, setOtpInput] = useState(null);
+  const [disabled, setDisabled] = useState(false);
   const navigate = useNavigate();
   const checkMailExists = async () => {
     const mailExists = await axios.post("http://localhost:3000/user/byEmail", {
@@ -26,18 +26,21 @@ const Login = () => {
       return setError("User Not Found. Please Sign Up");
     }
     if (!otp) {
+      setError("Sending Otp to the email. please wait.");
+      setDisabled(true)
       const emailSend = await sendMail(email)
+      setError("Otp sent to the email address, please check your email");
       if (emailSend.data.sent && emailSend.data.otp) {
-        setError("Otp sent to the email address, please check your email");
+        setDisabled(false)
         return setOtp(emailSend.data.otp);
+      } else {
+        setError("Something went wrong while sending the email. please try again");
       }
     }
     if (otp === parseInt(otpInput, 10)) {
-      console.log("otp matched!");
       const token = await axios.post("http://localhost:3000/token", {
         email: email,
       });
-      console.log(token.data.token);
       localStorage.setItem("authorization", token.data.token);
       navigate("/dashboard");
     } else {
@@ -93,6 +96,7 @@ const Login = () => {
                       size="large"
                       fullWidth
                       color="primary"
+                      disabled={disabled}
                       onClick={login}
                     >
                       SIGN IN

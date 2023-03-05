@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import Login from "./components/Login";
+import Login from "./components/login";
 import RegistrationForm from "./components/SignUp";
 import Dashboard from "./pages/Dashboard";
 import AddPatient from "./pages/Patient/AddPatient";
@@ -10,6 +10,12 @@ import EditTest from "./pages/Test/EditTest";
 import ViewTest from "./pages/Test/ViewTest";
 import CreateReport from "./pages/Report/CreateReport";
 import ViewReports from "./pages/Report/ViewReports";
+import AddUser from "./pages/User/AddUser";
+import ViewUser from "./pages/User/ViewUser";
+import JsonEditor from "./components/JSONInput";
+import EditUser from "./pages/User/EditUser";
+import AddExistingPatient from "./pages/Patient/ExistingPatient";
+import EditReports from "./pages/Report/EditReport";
 
 const router = createBrowserRouter([
   {
@@ -25,8 +31,28 @@ const router = createBrowserRouter([
     element: <Dashboard />,
   },
   {
+    path: "/jsonInput",
+    element: <JsonEditor data={[]} />,
+  },
+  {
+    path: "/user/addUser",
+    element: <AddUser />
+  },
+  {
+    path: "/user/viewUser",
+    element: <ViewUser />
+  },
+  {
+    path: "/user/viewUser/edit",
+    element: <EditUser />
+  },
+  {
     path: "/patient/addPatient",
     element: <AddPatient />,
+  },
+  {
+    path: "/patient/addPatient/existingUser",
+    element: <AddExistingPatient />,
   },
   {
     path: "/patient/viewPatient",
@@ -55,6 +81,10 @@ const router = createBrowserRouter([
   {
     path: "/reports/ViewReport",
     element: <ViewReports />,
+  },
+  {
+    path: "/reports/viewReport/edit",
+    element: <EditReports />,
   }
 ]);
 

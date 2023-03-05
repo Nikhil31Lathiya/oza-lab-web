@@ -22629,3 +22629,8 @@ dl li {
 }
 
 /*# sourceMappingURL=maps/style.css.map */
+
+.MuiDialog-root {
+  background-color: transparent;
+  opacity: 0.6;
+}

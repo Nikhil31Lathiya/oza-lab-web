@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
@@ -12,6 +12,8 @@ import DatePicker from "../DatePicker";
 import DropDown from "../Dropdown";
 import updatePatients from "../Actions/UpdatePatients";
 import deletePatients from "../Actions/DeletePatients";
+import viewTestAction from "../Actions/ViewTests";
+import GetTestById from "../Actions/GetTestById";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -35,31 +37,39 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 
 const EditPatients = () => {
   const { state } = useLocation();
-  const [title, setTitle] = useState(state.title);
-  const [firstName, setFirstName] = useState(state.firstName);
-  const [lastName, setLastName] = useState(state.lastName);
-  const [gender, setGender] = useState(state.gender);
-  const [contact, setContact] = useState(state.contact);
-  const [address, setAddress] = useState(state.address);
-  const [email, setEmail] = useState(state.email);
-  const [dob, setDob] = useState("");
-  const [otp, setOtp] = useState(null);
-  const [otpInput, setOtpInput] = useState(null);
+  const [testsData, setTestsData] = useState([]);
+  const [test, setTest] = useState("");
+  useEffect(() => {
+    const testById = async () => {
+      const { data } = await GetTestById(state.testId);
+      setTest(data.name);
+    };
+    testById();
+  }, [state.testId]);
+  useEffect(() => {
+    const getTests = async () => {
+      const { data } = await viewTestAction();
+      setTestsData(data);
+      // const test = data.filter((item) => {
+      //   console.log(item.id === state.testId)
+      //   return item.id === state.testId;
+      // });
+      // console.log({ test });
+      // setTest(test[0].name);
+    };
+    getTests();
+  }, []);
+  const [homeVisit, setHomeVisit] = useState(
+    state.homeVisit === true ? "Yes" : "No"
+  );
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  console.log("EditPatients", state);
   const edit = async (e) => {
     e.preventDefault();
     const { data } = await updatePatients(state.id, {
-      title,
-      firstName,
-      lastName,
-      gender,
-      contact,
-      address,
-      email,
+      homeVisit,
+      test,
     });
-    console.log(data);
     if (data) {
       navigate("/patient/viewPatient");
     }
@@ -76,14 +86,25 @@ const EditPatients = () => {
 
               <form>
                 <div className="form-group">
+                  <TextField disabled label="Test" value={test} variant="outlined" />
+                </div>
+                <div className="form-group">
                   <DropDown
-                    title={"title"}
-                    data={["mr", "mrs", "ms"]}
-                    tempState={state.title}
-                    setTempState={setTitle}
+                    title={"Edit Test"}
+                    data={testsData}
+                    tempState={test}
+                    setTempState={setTest}
                   />
                 </div>
                 <div className="form-group">
+                  <DropDown
+                    title={"HomeVisit"}
+                    data={["Yes", "No"]}
+                    tempState={homeVisit}
+                    setTempState={setHomeVisit}
+                  />
+                </div>
+                {/* <div className="form-group">
                   <TextField
                     required={true}
                     type="text"
@@ -157,11 +178,11 @@ const EditPatients = () => {
                     variant="outlined"
                     onChange={(event) => setContact(event.target.value)}
                   />
-                </div>
+                </div> */}
                 {/* <div className="form-group">
                   <DatePicker tempState={state.dob} setTempState={setDob} />
                 </div> */}
-                <div className="form-group">
+                {/* <div className="form-group">
                   <TextField
                     required={true}
                     id="outlined-multiline-flexible"
@@ -172,7 +193,7 @@ const EditPatients = () => {
                     defaultValue={state.address}
                     onChange={(event) => setAddress(event.target.value)}
                   />
-                </div>
+                </div> */}
                 {/* <div class="form-group" style={otp ? {} : { display: "none" }}>
                   <TextField
                     type={"text"}

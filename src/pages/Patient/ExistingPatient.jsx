@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar";
 // import Sidebar from '../../components/Sidebar'
 import { styled } from "@mui/material/styles";
 import AddPatientForm from "../../components/AddPatientForm";
-import AddUserReportForm from "../../components/AddUserReportForm";
+import AddExistingPatientForm from "../../components/AddPatientForm/ExistingPatient";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -24,17 +24,17 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
     }),
   })
 );
-const AddPatient = () => {
+const AddExistingPatient = () => {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Navbar open={open} setOpen={setOpen} />
       <Main open={open}>
-        <AddUserReportForm />
+        <AddExistingPatientForm />
       </Main>
     </>
   );
 };
 
-export default AddPatient;
+export default AddExistingPatient;

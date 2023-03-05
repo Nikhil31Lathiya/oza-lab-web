@@ -45,12 +45,15 @@ const EditTestForm = () => {
     const test = await updateTest(state.id, {
       name,
       shortName,
-      isActive,
+      isActive: isActive === 'false' ? false : true,
       price: parseFloat(price),
       measurement,
     });
     if (test.data) {
       navigate("/test/viewTest");
+    }
+    else {
+      setError("Something went wrong while updating test. please try again");
     }
   };
   return (
