@@ -4,7 +4,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import {RouterProvider} from 'react-router-dom'
 import router from "./routes";
-import "./assets/css/style.css";
+import "./assets/css/style.scss";
 import "./assets/vendors/ti-icons/css/themify-icons.css"
 import "./assets/vendors/base/vendor.bundle.base.css"
 

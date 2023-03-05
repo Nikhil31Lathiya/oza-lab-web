@@ -107,6 +107,7 @@ const ViewTestsTable = () => {
               <ListItemText style={style}>{test.name}</ListItemText>
               <ListItemText style={style}>{test.shortName}</ListItemText>
               <ListItemText style={style}>{test.price}</ListItemText>
+              <ListItemText style={style}>{test.isActive === true ? 'Active' : 'InActive'}</ListItemText>
               <ListItemText style={style}>
                 <span
                   style={{
