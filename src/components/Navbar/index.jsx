@@ -85,11 +85,16 @@ const NavBar = ({ open, setOpen }) => {
     setOpen(false);
   };
   const [openCollapse, setOpenCollapse] = React.useState(false);
+  const [openUserCollapse, setOpenUserCollapse] = React.useState(false);
   const [openTestCollapse, setOpenTestCollapse] = React.useState(false);
   const [openReportsCollapse, setOpenReportsCollapse] = React.useState(false);
 
   function handleOpenSettings() {
     setOpenCollapse(!openCollapse);
+  }
+
+  function handleUserOpenSettings() {
+    setOpenUserCollapse(!openUserCollapse);
   }
 
   function handleOpenTestsSettings() {
@@ -167,6 +172,27 @@ const NavBar = ({ open, setOpen }) => {
               <ListItemText primary={"Patients"} />
             </ListItemButton>
           </ListItem> */}
+          <ListItem button onClick={handleUserOpenSettings}>
+            <ListItemIcon>{<PersonIcon />}</ListItemIcon>
+            <ListItemText primary="Users" />
+            {openUserCollapse ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={openUserCollapse} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton onClick={() => navigate("/user/addUser")}>
+                {/* <ListItemIcon>
+                  <PersonAddIcon />
+                </ListItemIcon> */}
+                <ListItemText inset primary="Add User" />
+              </ListItemButton>
+              <ListItemButton onClick={() => navigate("/user/viewUser")}>
+                {/* <ListItemIcon>
+                  <PersonAddIcon />
+                </ListItemIcon> */}
+                <ListItemText inset primary="View User" />
+              </ListItemButton>
+            </List>
+          </Collapse>
           <ListItem button onClick={handleOpenSettings}>
             <ListItemIcon>{<PersonIcon />}</ListItemIcon>
             <ListItemText primary="Patients" />
@@ -228,7 +254,7 @@ const NavBar = ({ open, setOpen }) => {
                 </ListItemIcon> */}
                 <ListItemText inset primary="Create report" />
               </ListItemButton>
-              <ListItemButton onClick={() => navigate("/reports/ViewReports")}>
+              <ListItemButton onClick={() => navigate("/reports/ViewReport")}>
                 {/* <ListItemIcon>
                   <PersonAddIcon />
                 </ListItemIcon> */}
@@ -242,6 +268,12 @@ const NavBar = ({ open, setOpen }) => {
             <ListItemButton onClick={() => navigate("/")}>
               <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
               <ListItemText primary={"Logout"} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key={1} disablePadding>
+            <ListItemButton onClick={() => navigate("/jsonInput")}>
+              <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
+              <ListItemText primary={"CONVERT to JSON"} />
             </ListItemButton>
           </ListItem>
         </List>

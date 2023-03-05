@@ -1,6 +1,7 @@
+
 import axios from "axios";
-const updateTest = async (id, updateBody) => {
-  const updatePatient = await axios.patch(`http://localhost:3000/tests/${id}`, {
+const updateUser = async (id, updateBody) => {
+  const updatePatient = await axios.patch(`http://localhost:3000/user/${id}`, {
     ...updateBody,
   }, {
     headers: {
@@ -10,4 +11,4 @@ const updateTest = async (id, updateBody) => {
   return updatePatient;
 };
 
-export default updateTest;
+export default updateUser;

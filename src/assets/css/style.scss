@@ -22630,7 +22630,20 @@ dl li {
 
 /*# sourceMappingURL=maps/style.css.map */
 
-.MuiDialog-root {
-  background-color: transparent;
-  opacity: 0.6;
+.custom-modal-dialog.user-details-modal-dialog .MuiDialog-container #responsive-dialog-title {
+  margin-left: 40px;
+  margin-right: 40px;
+  padding: 40px 0px 36px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid #eaecf0;
+
+  .close-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
 }
+
+
+
+

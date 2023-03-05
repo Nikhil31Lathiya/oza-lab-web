@@ -1,9 +1,9 @@
 import axios from "axios";
-const addPatientAction = async (patientBody) => {
-  const { testsInput, homeVisit, ...rest } = patientBody;
-  const userAdded = await axios.post("http://localhost:3000/user", {
-    ...rest,
-  });
+import { MailExists } from "./MailExists";
+
+const AddExistingPatientAction = async (patientBody) => {
+  const { email, testsInput, homeVisit } = patientBody;
+  const { data } = await MailExists(email);
   const test = await axios.get(
     `http://localhost:3000/tests/name/${testsInput}`,
     {
@@ -15,7 +15,7 @@ const addPatientAction = async (patientBody) => {
   const patientAdded = await axios.post(
     "http://localhost:3000/patients",
     {
-      userId: userAdded.data.user.id,
+      userId: data.id,
       testId: test.data.id,
       homeVisit: homeVisit === "Yes" ? true : false,
     },
@@ -28,4 +28,4 @@ const addPatientAction = async (patientBody) => {
   return patientAdded;
 };
 
-export default addPatientAction;
+export default AddExistingPatientAction;

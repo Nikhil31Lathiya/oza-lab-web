@@ -5,7 +5,6 @@ const viewTestAction = async () => {
         authorization: localStorage.getItem('authorization')
     }
   });
-  console.log(patients);
   return patients;
 };
 

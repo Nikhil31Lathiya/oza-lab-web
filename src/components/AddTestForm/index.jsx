@@ -53,8 +53,6 @@ const AddTestForm = () => {
       price,
       measurement
     })
-    console.log(test)
-    console.log(test.data)
     if(test.data) {
       navigate('/test/viewTest')
     }

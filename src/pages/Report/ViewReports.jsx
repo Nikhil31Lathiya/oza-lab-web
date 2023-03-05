@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import DashboardItem from "../../components/DashboardItem";
+import Navbar from "../../components/Navbar";
+// import Sidebar from '../../components/Sidebar'
 import { styled } from "@mui/material/styles";
-import { Navbar } from "react-bootstrap";
-import ViewReportsTable from "../../components/ViewReportsTable";
+import AddPatientForm from "../../components/AddPatientForm";
+import ViewPatients from "../../components/ViewPatientsTable";
+import ViewPatientsTable from "../../components/ViewPatientsTable";
+import ViewReportsTable from "../../components/ViewReportsTable"
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -11,7 +16,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: `-${240}px`,
+    marginLeft: `-240px`,
     ...(open && {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
@@ -21,7 +26,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
     }),
   })
 );
-
 const ViewReports = () => {
   const [open, setOpen] = useState(false);
 

@@ -11,15 +11,34 @@ const DropDown = ({ tempState, setTempState, data, title }) => {
   return (
     <FormControl fullWidth>
       <InputLabel id="demo-simple-select-label">{title}</InputLabel>
-      <Select
+      {/* <Select
         id="demo-simple-select"
         label={title}
         defaultValue={tempState}
         onChange={handleChange}
+      > */}
+      <Select
+        id="demo-simple-select"
+        label={title}
+        defaultValue={typeof tempState === "string" ? tempState : tempState.name ? tempState.name : tempState.email}
+        // defaultValue={tempState}
+        onChange={handleChange}
       >
-        {data.map((dataItem, index) => (
-          <MenuItem key={index} value={dataItem}>{dataItem}</MenuItem>
-        ))}
+        {data.length > 0 &&
+          data.map((dataItem, index) => {
+            return (
+              <MenuItem
+                key={index}
+                // value={dataItem}
+                // defaultValue={typeof dataItem === "string" ? dataItem : dataItem.name}
+                // defaultValue={typeof tempState === "string" ? tempState : dataItem.name}
+                value={typeof dataItem === "string" ? dataItem : dataItem.name ? dataItem.name : dataItem.email}
+              >
+                {typeof dataItem === "string" ? dataItem : dataItem.name ? dataItem.name : dataItem.email}
+                {/* {dataItem} */}
+              </MenuItem>
+            );
+          })}
       </Select>
     </FormControl>
   );

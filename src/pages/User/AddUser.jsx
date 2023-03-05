@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import Navbar from "../../components/Navbar";
 import { styled } from "@mui/material/styles";
+import AddUserForm from "../../components/AddUser";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -9,8 +11,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    // marginLeft: `-${drawerWidth}px`,
-    marginLeft: `240px`,
+    marginLeft: `-${240}px`,
     ...(open && {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
@@ -20,9 +21,17 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
     }),
   })
 );
+const AddUser = () => {
+  const [open, setOpen] = useState(false);
 
-const CreateReportForm = () => {
-  return <h1>Nikhil Lathiya</h1>;
+  return (
+    <>
+      <Navbar open={open} setOpen={setOpen} />
+      <Main open={open}>
+        <AddUserForm />
+      </Main>
+    </>
+  );
 };
 
-export default CreateReportForm;
+export default AddUser;

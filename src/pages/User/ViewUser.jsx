@@ -4,7 +4,9 @@ import Navbar from "../../components/Navbar";
 // import Sidebar from '../../components/Sidebar'
 import { styled } from "@mui/material/styles";
 import AddPatientForm from "../../components/AddPatientForm";
-import AddUserReportForm from "../../components/AddUserReportForm";
+import ViewPatients from "../../components/ViewPatientsTable";
+import ViewPatientsTable from "../../components/ViewPatientsTable";
+import ViewUserTable from "../../components/ViewUsers";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -14,7 +16,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: `-${240}px`,
+    marginLeft: `-240px`,
     ...(open && {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
@@ -24,17 +26,17 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
     }),
   })
 );
-const AddPatient = () => {
+const ViewUser = () => {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Navbar open={open} setOpen={setOpen} />
       <Main open={open}>
-        <AddUserReportForm />
+        <ViewUserTable />
       </Main>
     </>
   );
 };
 
-export default AddPatient;
+export default ViewUser;

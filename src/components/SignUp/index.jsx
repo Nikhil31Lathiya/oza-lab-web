@@ -23,6 +23,7 @@ import DatePicker from "../DatePicker";
 import SignUpAction from "./action";
 import { sendMail } from "../Actions/SendMail";
 import axios from "axios";
+import addUserAction from "../Actions/AddUsers";
 
 const RegistrationForm = () => {
   localStorage.clear();
@@ -30,8 +31,7 @@ const RegistrationForm = () => {
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [role, setRole] = React.useState("");
   const [gender, setGender] = React.useState("female");
   const [contact, setContact] = React.useState("");
   const [address, setAddress] = React.useState("");
@@ -43,25 +43,28 @@ const RegistrationForm = () => {
 
   const signUp = async () => {
     if (!otp) {
+      setError("Sending Otp to the email. please wait.");
       const emailSend = await sendMail(email);
       if (emailSend.data.sent && emailSend.data.otp) {
         setError("Otp sent to the email address, please check your email");
         return setOtp(emailSend.data.otp);
+      } else {
+        setError("something went wrong while sending email. please try again")
       }
     }
     if (otp === parseInt(otpInput, 10)) {
-      console.log("otp matched!");
       const signUpObject = {
         email,
         title,
         firstName,
         lastName,
         dob,
+        role,
         gender,
         address,
         contact,
       };
-      const response = await SignUpAction(signUpObject);
+      const response = await addUserAction(signUpObject);
       if (response.data.token) {
         localStorage.setItem("authorization", response.data.token);
         navigate("/dashboard");
@@ -116,7 +119,14 @@ const RegistrationForm = () => {
                       onChange={(event) => setLastName(event.target.value)}
                     />
                   </div>
-
+                  <div className="form-group">
+                    <Dropdown
+                      data={["SUPER ADMIN", "ADMIN", "USER"]}
+                      title={"role"}
+                      tempState={role}
+                      setTempState={setRole}
+                    />
+                  </div>
                   <div className="form-group">
                     <DatePicker tempState={dob} setTempState={setDob} />
                   </div>
