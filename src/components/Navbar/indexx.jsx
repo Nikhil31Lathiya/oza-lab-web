@@ -22,9 +22,7 @@ import { Button, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DescriptionIcon from "@mui/icons-material/Description";
-import BookOnlineIcon from "@mui/icons-material/BookOnline";
-import SummarizeIcon from "@mui/icons-material/Summarize";
-import BiotechIcon from "@mui/icons-material/Biotech";
+import PermissionContext from "../../context/PermissionContext";
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -87,7 +85,6 @@ const NavBar = ({ open, setOpen }) => {
   const [openUserCollapse, setOpenUserCollapse] = React.useState(false);
   const [openTestCollapse, setOpenTestCollapse] = React.useState(false);
   const [openReportsCollapse, setOpenReportsCollapse] = React.useState(false);
-  const [openSlotsCollapse, setOpenSlotsCollapse] = React.useState(false);
 
   function handleOpenSettings() {
     setOpenCollapse(!openCollapse);
@@ -103,9 +100,6 @@ const NavBar = ({ open, setOpen }) => {
 
   function handleOpenReportsSettings() {
     setOpenReportsCollapse(!openReportsCollapse);
-  }
-  function handleOpenSlotsSettings() {
-    setOpenSlotsCollapse(!openSlotsCollapse);
   }
 
   return (
@@ -123,16 +117,7 @@ const NavBar = ({ open, setOpen }) => {
             <MenuIcon />
           </IconButton>
           <Button
-            onClick={() => {
-              if (
-                localStorage.getItem("rolId") === "1" ||
-                localStorage.getItem("rolId") === "2"
-              ) {
-                navigate("/dashboard");
-              } else {
-                navigate("/user/dashboard");
-              }
-            }}
+            onClick={() => navigate("/dashboard")}
             variant="h6"
             noWrap
             component="div"
@@ -183,62 +168,58 @@ const NavBar = ({ open, setOpen }) => {
           ) : (
             <ListItem key={1} disablePadding>
               <ListItemButton onClick={() => navigate("/user/dashboard")}>
-                <ListItemIcon>{<SummarizeIcon />}</ListItemIcon>
-                <ListItemText primary={"Reports"} />
+                <ListItemIcon>{<DashboardIcon />}</ListItemIcon>
+                <ListItemText primary={"Dashboard"} />
               </ListItemButton>
             </ListItem>
           )}
-          {(localStorage.getItem("roleId") === "1" ||
-            localStorage.getItem("roleId") === "2") && (
-            <>
-              <ListItem button onClick={handleUserOpenSettings}>
-                <ListItemIcon>{<PersonIcon />}</ListItemIcon>
-                <ListItemText primary="Users" />
-                {openUserCollapse ? <ExpandLess /> : <ExpandMore />}
-              </ListItem>
-              <Collapse in={openUserCollapse} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <ListItemButton onClick={() => navigate("/user/addUser")}>
-                    <ListItemText inset primary="Add User" />
-                  </ListItemButton>
-                  <ListItemButton onClick={() => navigate("/user/viewUser")}>
-                    <ListItemText inset primary="View User" />
-                  </ListItemButton>
-                </List>
-              </Collapse>
-            </>
-          )}
-          {(localStorage.getItem("roleId") === "1" ||
-            localStorage.getItem("roleId") === "2") && (
-            <>
-              <ListItem button onClick={handleOpenSettings}>
-                <ListItemIcon>{<PersonIcon />}</ListItemIcon>
-                <ListItemText primary="Patients" />
-                {openCollapse ? <ExpandLess /> : <ExpandMore />}
-              </ListItem>
-              <Collapse in={openCollapse} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <ListItemButton
-                    onClick={() => navigate("/patient/addPatient")}
-                  >
-                    <ListItemText inset primary="Add Patient" />
-                  </ListItemButton>
-                  <ListItemButton
-                    onClick={() => navigate("/patient/viewPatient")}
-                  >
-                    <ListItemText inset primary="View Patient" />
-                  </ListItemButton>
-                </List>
-              </Collapse>
-            </>
-          )}
+          {localStorage.getItem("roleId") === "1" ||
+            (localStorage.getItem("roleId") === "2" && (
+              <>
+                <ListItem button onClick={handleUserOpenSettings}>
+                  <ListItemIcon>{<PersonIcon />}</ListItemIcon>
+                  <ListItemText primary="Users" />
+                  {openUserCollapse ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={openUserCollapse} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItemButton onClick={() => navigate("/user/addUser")}>
+                      <ListItemText inset primary="Add User" />
+                    </ListItemButton>
+                    <ListItemButton onClick={() => navigate("/user/viewUser")}>
+                      <ListItemText inset primary="View User" />
+                    </ListItemButton>
+                  </List>
+                </Collapse>
+
+                <ListItem button onClick={handleOpenSettings}>
+                  <ListItemIcon>{<PersonIcon />}</ListItemIcon>
+                  <ListItemText primary="Patients" />
+                  {openCollapse ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={openCollapse} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItemButton
+                      onClick={() => navigate("/patient/addPatient")}
+                    >
+                      <ListItemText inset primary="Add Patient" />
+                    </ListItemButton>
+                    <ListItemButton
+                      onClick={() => navigate("/patient/viewPatient")}
+                    >
+                      <ListItemText inset primary="View Patient" />
+                    </ListItemButton>
+                  </List>
+                </Collapse>
+                <ListItem button onClick={handleOpenTestsSettings}>
+                  <ListItemIcon>{<PersonIcon />}</ListItemIcon>
+                  <ListItemText primary="Tests" />
+                  {openTestCollapse ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+              </>
+            ))}
           {localStorage.getItem("roleId") === "1" ? (
             <>
-              <ListItem button onClick={handleOpenTestsSettings}>
-                <ListItemIcon>{<BiotechIcon />}</ListItemIcon>
-                <ListItemText primary="Tests" />
-                {openTestCollapse ? <ExpandLess /> : <ExpandMore />}
-              </ListItem>
               <Collapse in={openTestCollapse} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   <ListItemButton onClick={() => navigate("/test/addTest")}>
@@ -249,32 +230,6 @@ const NavBar = ({ open, setOpen }) => {
                   </ListItemButton>
                 </List>
               </Collapse>
-            </>
-          ) : (
-            <>
-              <ListItem key={1} disablePadding>
-                <ListItemButton onClick={() => navigate("/test/viewTest")}>
-                  <ListItemIcon>{<BiotechIcon />}</ListItemIcon>
-                  <ListItemText primary={"Tests"} />
-                </ListItemButton>
-              </ListItem>
-              <ListItemButton onClick={() => navigate("/homeVisit/add")}>
-                <ListItemIcon>
-                  <BookOnlineIcon />
-                </ListItemIcon>
-                <ListItemText primary="Book Slot" />
-              </ListItemButton>
-              <ListItem key={1} disablePadding>
-                <ListItemButton onClick={() => navigate("/")}>
-                  <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
-                  <ListItemText primary={"Logout"} />
-                </ListItemButton>
-              </ListItem>
-            </>
-          )}
-          {(localStorage.getItem("roleId") === "1" ||
-            localStorage.getItem("roleId") === "2") && (
-            <>
               <ListItem button onClick={handleOpenReportsSettings}>
                 <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
                 <ListItemText primary="Reports" />
@@ -294,27 +249,18 @@ const NavBar = ({ open, setOpen }) => {
                   </ListItemButton>
                 </List>
               </Collapse>
-
-              <ListItem button onClick={handleOpenSlotsSettings}>
-                <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
-                <ListItemText primary="Slots" />
-                {openSlotsCollapse ? <ExpandLess /> : <ExpandMore />}
+              <ListItem key={1} disablePadding>
+                <ListItemButton onClick={() => navigate("/")}>
+                  <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
+                  <ListItemText primary={"Logout"} />
+                </ListItemButton>
               </ListItem>
-              <Collapse in={openSlotsCollapse} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <ListItemButton
-                    onClick={() => navigate("/homeVisit/pending")}
-                  >
-                    <ListItemText inset primary="Pending request" />
-                  </ListItemButton>
-                  <ListItemButton
-                    onClick={() => navigate("/homeVisit/approved")}
-                  >
-                    <ListItemText inset primary="Approved request" />
-                  </ListItemButton>
-                </List>
-              </Collapse>
-
+            </>
+          ) : (
+            <>
+              <ListItemButton onClick={() => navigate("/test/viewTest")}>
+                <ListItemText inset primary="View Test" />
+              </ListItemButton>
               <ListItem key={1} disablePadding>
                 <ListItemButton onClick={() => navigate("/")}>
                   <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
@@ -323,35 +269,11 @@ const NavBar = ({ open, setOpen }) => {
               </ListItem>
             </>
           )}
-          {/* {localStorage.getItem("roleId") === "3" && (
-            <ListItemButton onClick={() => navigate("/homeVisit/add")}>
-              <ListItemIcon>
-                <BookOnlineIcon />
-              </ListItemIcon>
-              <ListItemText primary="Book Slot" />
-            </ListItemButton>
-          )} */}
 
           {/* --------------- */}
-          {/* {localStorage.getItem("roleId") === "1" ||
-          localStorage.getItem("roleId") === "2" ? (
-            <ListItem key={1} disablePadding>
-              <ListItemButton onClick={() => navigate("/")}>
-                <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
-                <ListItemText primary={"Logout"} />
-              </ListItemButton>
-            </ListItem>
-          ) : (
-            <ListItem key={1} disablePadding>
-              <ListItemButton onClick={() => navigate("/")}>
-                <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
-                <ListItemText primary={"Logout"} />
-              </ListItemButton>
-            </ListItem>
-          )} */}
           <ListItem key={1} disablePadding>
             <ListItemButton onClick={() => navigate("/jsonInput")}>
-              {/* <ListItemIcon>{<LogoutIcon />}</ListItemIcon> */}
+              <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
               <ListItemText primary={"CONVERT to JSON"} />
             </ListItemButton>
           </ListItem>

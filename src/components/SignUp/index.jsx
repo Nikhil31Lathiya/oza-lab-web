@@ -13,7 +13,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Dropdown from "../Dropdown";
 import { SignUpLogo } from "./RegistrationImages";
@@ -24,6 +24,8 @@ import SignUpAction from "./action";
 import { sendMail } from "../Actions/SendMail";
 import axios from "axios";
 import addUserAction from "../Actions/AddUsers";
+import GetPermissionsByRoleId from "../Actions/GetPermission";
+import PermissionContext from "../../context/PermissionContext";
 
 const RegistrationForm = () => {
   localStorage.clear();
@@ -40,6 +42,7 @@ const RegistrationForm = () => {
   const [otpInput, setOtpInput] = React.useState(null);
   const [error, setError] = React.useState("");
   const navigate = useNavigate();
+  const { dispatch } = useContext(PermissionContext);
 
   const signUp = async () => {
     if (!otp) {
@@ -49,7 +52,7 @@ const RegistrationForm = () => {
         setError("Otp sent to the email address, please check your email");
         return setOtp(emailSend.data.otp);
       } else {
-        setError("something went wrong while sending email. please try again")
+        setError("something went wrong while sending email. please try again");
       }
     }
     if (otp === parseInt(otpInput, 10)) {
@@ -59,15 +62,28 @@ const RegistrationForm = () => {
         firstName,
         lastName,
         dob,
-        role,
+        role: "USER",
         gender,
         address,
         contact,
       };
       const response = await addUserAction(signUpObject);
       if (response.data.token) {
+        localStorage.setItem("roleId", response.data.user.roleId);
         localStorage.setItem("authorization", response.data.token);
-        navigate("/dashboard");
+        localStorage.setItem("userId", response.data.user.id);
+        const permissions = await GetPermissionsByRoleId(
+          response.data.user.roleId
+        );
+        await dispatch({ type: "USER_PROFILE", payload: permissions.data });
+        if (
+          response.data.user.roleId === 1 ||
+          response.data.user.roleId === 2
+        ) {
+          navigate("/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
       }
       setError(response.data.message);
     } else {
@@ -81,15 +97,18 @@ const RegistrationForm = () => {
           <div className="row w-100 mx-0">
             <div className="col-lg-4 mx-auto">
               <div className="auth-form-light text-left py-5 px-4 px-sm-5">
-                <div className="brand-logo">
-                  <h4>OZA-LAB</h4>
-                  {/* <img src={SignUpLogo} alt="logo" /> */}
+                <div style={{ display: "flex" }}>
+                  <img
+                    src={require("../../assets/images/oza-lab-logo.png")}
+                    alt="logo"
+                    height="100px"
+                  />
+                  <h4 style={{marginTop: "30px", marginLeft: "30px"}}>OZA-LAB</h4>
                 </div>
-                <h4>New here?</h4>
+                <h4 style={{ marginTop: "20px" }}>New here?</h4>
                 <h6 className="font-weight-light">
                   Signing up is easy. It only takes a few steps
                 </h6>
-                <h6 className="font-weight-light">{error}</h6>
                 <form className="pt-3">
                   <div className="form-group">
                     <Dropdown
@@ -117,14 +136,6 @@ const RegistrationForm = () => {
                       label="Last Name"
                       variant="outlined"
                       onChange={(event) => setLastName(event.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <Dropdown
-                      data={["SUPER ADMIN", "ADMIN", "USER"]}
-                      title={"role"}
-                      tempState={role}
-                      setTempState={setRole}
                     />
                   </div>
                   <div className="form-group">
@@ -203,6 +214,7 @@ const RegistrationForm = () => {
                       }}
                     />
                   </div>
+                  <h6 className="font-weight-light">{error}</h6>
                   <div className="mt-3">
                     <Button
                       variant="outlined"

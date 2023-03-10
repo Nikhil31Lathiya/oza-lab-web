@@ -71,6 +71,7 @@ const ViewReportsTable = () => {
   }, [deleted]);
 
   const edit = async (id) => {
+    console.log({'editreport':id})
     const { data } = await GetUserReportById(id);
     navigate("/reports/viewReport/edit", { state: data });
   };
@@ -156,7 +157,7 @@ const ViewReportsTable = () => {
             );
           })
         ) : (
-          <ListItem style={{ width: "100%" }}>No Patient Found</ListItem>
+          <ListItem style={{ width: "100%" }}>No User Report Found</ListItem>
         )}
       </List>
     </Main>

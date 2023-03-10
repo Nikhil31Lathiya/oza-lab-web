@@ -50,12 +50,6 @@ const EditPatients = () => {
     const getTests = async () => {
       const { data } = await viewTestAction();
       setTestsData(data);
-      // const test = data.filter((item) => {
-      //   console.log(item.id === state.testId)
-      //   return item.id === state.testId;
-      // });
-      // console.log({ test });
-      // setTest(test[0].name);
     };
     getTests();
   }, []);

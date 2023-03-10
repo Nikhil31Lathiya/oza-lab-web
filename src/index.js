@@ -2,18 +2,20 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import {RouterProvider} from 'react-router-dom'
+import { RouterProvider } from "react-router-dom";
 import router from "./routes";
 import "./assets/css/style.scss";
-import "./assets/vendors/ti-icons/css/themify-icons.css"
-import "./assets/vendors/base/vendor.bundle.base.css"
+import "./assets/vendors/ti-icons/css/themify-icons.css";
+import "./assets/vendors/base/vendor.bundle.base.css";
+import { PermissionProvider } from "./context/PermissionContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <PermissionProvider>
+      <RouterProvider router={router} />
+    </PermissionProvider>
   </React.StrictMode>
 );
 

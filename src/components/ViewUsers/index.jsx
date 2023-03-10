@@ -9,7 +9,7 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import viewPatientAction from "../Actions/ViewPatients";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,6 +21,7 @@ import deleteUser from "../Actions/DeleteUser";
 import DropDown from "../Dropdown";
 import viewUserAction from "../Actions/ViewUsers";
 import GetUserById from "../Actions/GetUserById";
+import PermissionContext from "../../context/PermissionContext";
 
 const style = {
   width: "100px",
@@ -51,13 +52,11 @@ const ViewUserTable = () => {
   const [deleted, setDeleted] = useState([]);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState(null);
-
   const navigate = useNavigate();
   let sno = 0;
   useEffect(() => {
     const getUsers = async () => {
       const users = await viewUserAction();
-      console.log(users.data);
       setUsers(users.data);
     };
     getUsers();
@@ -65,16 +64,12 @@ const ViewUserTable = () => {
 
   const edit = async (id) => {
     const { data } = await GetUserById(id);
-    console.log(data);
     navigate("/user/viewUser/edit", { state: data });
   };
 
   const deleteUserById = async (id) => {
     setId(id);
     setOpen(true);
-    // const { data } = await deleteUser(id);
-    // console.log(data);
-    // setDeleted(!deleted);
   };
 
   const handleClose = () => {
@@ -83,7 +78,6 @@ const ViewUserTable = () => {
 
   const handleDelete = async () => {
     const { data } = await deleteUser(id);
-    console.log(data);
     setDeleted(!deleted);
     setOpen(false);
   };

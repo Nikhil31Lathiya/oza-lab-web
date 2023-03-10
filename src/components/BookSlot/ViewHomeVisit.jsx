@@ -17,6 +17,7 @@ import deleteTests from "../Actions/DeleteTests";
 import GetTestById from "../Actions/GetTestById";
 import PermissionContext from "../../context/PermissionContext";
 import { CAN_EDIT_TEST } from "../../constants/permission";
+import viewUserHomeVisit from "../Actions/ViewUserHomeVisit";
 
 const style = {
   width: "100px",
@@ -40,44 +41,59 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
     }),
   })
 );
-
-const ViewTestsTable = () => {
-  const [test, setTest] = useState([]);
+const testDataState = [];
+const ViewHomeVisit = ({ userHomeVisit, userEmail, testData }) => {
+  //   const [userHomeVisits, setTest] = useState([]);
   const [deleted, setDeleted] = useState([]);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState(null);
   const { permission } = useContext(PermissionContext);
   const navigate = useNavigate();
+  //   const [testDataState, setTestDataState] = useState(testData);
   let sno = 0;
-  useEffect(() => {
-    const getTests = async () => {
-      const test = await viewTestAction();
-      setTest(test.data);
-    };
-    getTests();
-  }, [deleted]);
+  console.log("homeVisitSlot", userHomeVisit);
+  console.log("userEmail", userEmail);
 
-  const edit = async (id) => {
-    const { data } = await GetTestById(id);
-    navigate("/test/viewTest/edit", { state: data });
-  };
+  //   const getTestData = async () => {
+  //     const { data: test } = await viewTestAction();
+  //     console.log({ test });
+  //     // testData = test;
+  //     testDataState.push(test);
+  //   };
 
-  const deleteTest = (id) => {
-    setId(id);
-    setOpen(true);
-  };
+  //   if (testData.length === 0) {
+  //     console.log({ testData });
+  //     getTestData();
+  //   }
+  //   useEffect(() => {
+  //     const getTests = async () => {
+  //     //   const {data: userHomeVisit} = await viewUserHomeVisit(localStorage.getItem("userId"));
+  //     //   setTest(test.data);
+  //     };
+  //     getTests();
+  //   }, [deleted]);
 
-  const handleDelete = async () => {
-    const { data } = await deleteTests(id);
-    if (data) {
-      setDeleted(!deleted);
-      setOpen(false);
-    }
-  };
+  //   const edit = async (id) => {
+  //     const { data } = await GetTestById(id);
+  //     navigate("/test/viewTest/edit", { state: data });
+  //   };
 
-  const handleClose = async (id) => {
-    setOpen(false);
-  };
+  //   const deleteTest = (id) => {
+  //     setId(id);
+  //     setOpen(true);
+  //   };
+
+  //   const handleDelete = async () => {
+  //     const { data } = await deleteTests(id);
+  //     if (data) {
+  //       setDeleted(!deleted);
+  //       setOpen(false);
+  //     }
+  //   };
+
+  //   const handleClose = async (id) => {
+  //     setOpen(false);
+  //   };
 
   return (
     <Main>
@@ -86,31 +102,50 @@ const ViewTestsTable = () => {
           <ListItemText style={style}>
             <b>Sr No.</b>
           </ListItemText>
-          <ListItemText style={style}>
-            <b>Name</b>
-          </ListItemText>
-          <ListItemText style={style}>
-            <b>Short Name</b>
-          </ListItemText>
-          <ListItemText style={style}>
-            <b>Price</b>
-          </ListItemText>
-          <ListItemText style={style}>
-            <b>Is Active</b>
-          </ListItemText>
-          {permission.includes(CAN_EDIT_TEST) && (
+          {userEmail && (
             <ListItemText style={style}>
-              <b>Actions</b>
+              <b>Name</b>
             </ListItemText>
           )}
+          <ListItemText style={style}>
+            <b>Test</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Booking Date</b>
+          </ListItemText>
+          <ListItemText style={style}>
+            <b>Approved ?</b>
+          </ListItemText>
         </ListItem>
-        {test.map((test, index) => {
+        {userHomeVisit.length > 0 ? (
+          userHomeVisit.map((homeVisit, index) => {
+            const testName = testData
+              .filter((item) => item.id === homeVisit.testId)
+              .map((mapItem) => mapItem.name);
+            return (
+              <ListItem key={index}>
+                <ListItemText style={style}>{(sno += 1)}</ListItemText>
+                {userEmail && (
+                  <ListItemText style={style}>{userEmail}</ListItemText>
+                )}
+                <ListItemText style={style}>{testName}</ListItemText>
+                <ListItemText style={style}>
+                  {new Date(homeVisit.bookingDate).toLocaleDateString("en-GB")}
+                </ListItemText>
+                <ListItemText style={style}>
+                  {homeVisit.isApproved === true ? "Approved" : homeVisit.isActive === true ? "Pending" : "Declined"}
+                </ListItemText>
+              </ListItem>
+            );
+          })
+        ) : (
+          <ListItem>
+            <ListItemText>No. request</ListItemText>
+          </ListItem>
+        )}
+        {/* {test.map((test, index) => {
           return (
             <ListItem key={index}>
-              <ListItemText style={style}>{(sno += 1)}</ListItemText>
-              <ListItemText style={style}>{test.name}</ListItemText>
-              <ListItemText style={style}>{test.shortName}</ListItemText>
-              <ListItemText style={style}>{test.price}</ListItemText>
               <ListItemText style={style}>
                 <span
                   style={{
@@ -151,10 +186,10 @@ const ViewTestsTable = () => {
               )}
             </ListItem>
           );
-        })}
+        })} */}
       </List>
     </Main>
   );
 };
 
-export default ViewTestsTable;
+export default ViewHomeVisit;

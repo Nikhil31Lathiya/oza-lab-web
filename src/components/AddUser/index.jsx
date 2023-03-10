@@ -85,8 +85,6 @@ const AddUserForm = () => {
           <div class="card">
             <div class="card-body">
               <h4 class="card-title">Add User</h4>
-              <h4>{error}</h4>
-
               <form>
                 <div className="form-group">
                   <DropDown
@@ -204,6 +202,7 @@ const AddUserForm = () => {
                   />
                   {/* <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" /> */}
                 </div>
+                <h4>{error}</h4>
                 <button
                   type="submit"
                   class="btn btn-primary me-2"

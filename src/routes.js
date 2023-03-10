@@ -16,6 +16,10 @@ import JsonEditor from "./components/JSONInput";
 import EditUser from "./pages/User/EditUser";
 import AddExistingPatient from "./pages/Patient/ExistingPatient";
 import EditReports from "./pages/Report/EditReport";
+import UserDashboard from "./pages/Dashboard/UserDashboard";
+import AddHomeVisit from "./pages/HomeVisit/AddHomeVisit";
+import ViewHomeVisits from "./pages/HomeVisit/ViewHomeVisit";
+import ViewApprovedHomeVisits from "./pages/HomeVisit/ViewApprovedHomeVisit";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/user/dashboard",
+    element: <UserDashboard />,
   },
   {
     path: "/jsonInput",
@@ -85,7 +93,20 @@ const router = createBrowserRouter([
   {
     path: "/reports/viewReport/edit",
     element: <EditReports />,
+  },
+  {
+    path: "/homeVisit/add",
+    element: <AddHomeVisit />,
+  },
+  {
+    path: "/homeVisit/pending",
+    element: <ViewHomeVisits />,
+  },
+  {
+    path: "/homeVisit/approved",
+    element: <ViewApprovedHomeVisits />,
   }
+
 ]);
 
 export default router;

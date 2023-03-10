@@ -1,6 +1,5 @@
 import axios from "axios";
 const AddUserReportAction = async (userReportBody) => {
-  console.log({ userReportBody });
   const test = await axios.post(
     "http://localhost:3000/userReport",
     {

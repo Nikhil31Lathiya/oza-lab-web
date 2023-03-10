@@ -1,10 +1,12 @@
 import { Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
 import { sendMail } from "../Actions/SendMail";
+import GetPermissionsByRoleId from "../Actions/GetPermission";
+import PermissionContext from "../../context/PermissionContext";
 
 const Login = () => {
   localStorage.clear();
@@ -14,6 +16,8 @@ const Login = () => {
   const [otpInput, setOtpInput] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const navigate = useNavigate();
+  const { dispatch } = useContext(PermissionContext);
+
   const checkMailExists = async () => {
     const mailExists = await axios.post("http://localhost:3000/user/byEmail", {
       email: email,
@@ -27,14 +31,16 @@ const Login = () => {
     }
     if (!otp) {
       setError("Sending Otp to the email. please wait.");
-      setDisabled(true)
-      const emailSend = await sendMail(email)
+      setDisabled(true);
+      const emailSend = await sendMail(email);
       setError("Otp sent to the email address, please check your email");
       if (emailSend.data.sent && emailSend.data.otp) {
-        setDisabled(false)
+        setDisabled(false);
         return setOtp(emailSend.data.otp);
       } else {
-        setError("Something went wrong while sending the email. please try again");
+        setError(
+          "Something went wrong while sending the email. please try again"
+        );
       }
     }
     if (otp === parseInt(otpInput, 10)) {
@@ -42,6 +48,13 @@ const Login = () => {
         email: email,
       });
       localStorage.setItem("authorization", token.data.token);
+      localStorage.setItem("roleId", mailExists.data.roleId);
+      localStorage.setItem("userId", mailExists.data.id);
+      const permissions = await GetPermissionsByRoleId(mailExists.data.roleId);
+      await dispatch({ type: "USER_PROFILE", payload: permissions.data });
+      if (mailExists.data.roleId === 3) {
+        return navigate("/user/dashboard");
+      }
       navigate("/dashboard");
     } else {
       setError("Incorrect otp. Please Try Again!");
@@ -54,9 +67,14 @@ const Login = () => {
           <div class="row w-100 mx-0">
             <div class="col-lg-4 mx-auto">
               <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-                <div class="brand-logo">
+                <div style={{ display: "flex", marginBottom: '40px' }}>
                   {/* <img src={LoginLogo} alt="logo" /> */}
-                  <h3>OZA-LAB</h3>
+                  <img
+                    src={require("../../assets/images/oza-lab-logo.png")}
+                    alt="logo"
+                    height="70px"
+                  />
+                  <h3 style={{marginTop: "30px", marginLeft: "30px"}}>OZA-LAB</h3>
                 </div>
                 <h6 class="font-weight-light">Sign in to continue.</h6>
                 <h6>{error}</h6>
@@ -70,7 +88,7 @@ const Login = () => {
                       variant="outlined"
                       onChange={(event) => {
                         setEmail(event.target.value);
-                        setError("")
+                        setError("");
                       }}
                     />
                   </div>

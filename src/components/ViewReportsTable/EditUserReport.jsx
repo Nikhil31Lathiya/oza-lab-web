@@ -56,8 +56,13 @@ const EditUserReportsForm = () => {
 
   useEffect(() => {
     const getInitialData = async () => {
+      console.log("getInitialData", state)
+      console.log("patientId", state.patientId)
+
       const { data: patientData } = await GetPatientById(state.patientId);
+      console.log(patientData)
       const { data: userData } = await GetUserById(patientData.userId);
+
       setPatientInput(userData);
       const { data: testData } = await GetTestById(state.testId);
       setTestIndividual(testData);
@@ -72,7 +77,6 @@ const EditUserReportsForm = () => {
       testId: state.testId,
       testResult: report
     })
-    console.log(userReport);
     if (userReport) {
       navigate("/reports/ViewReport");
     }

@@ -1,6 +1,5 @@
 import axios from "axios";
 const GetUserByIds = async (ids) => {
-  console.log({ ids });
   const user = await axios.post(
     "http://localhost:3000/user/byIds",
     {

@@ -71,18 +71,12 @@ const AddUserReportForm = () => {
     const getData = async () => {
       const { data } = await viewTestAction();
       const { data: patientData } = await viewPatientAction();
-      console.log({ data: patientData.patients });
       patientData.patients.forEach((patient) => {
         if (!ids.includes(patient.userId)) {
           ids.push(patient.userId);
         }
       });
       const { data: userData } = await GetUserByIds(ids);
-      console.log({
-        testData: data,
-        userData,
-        patientsData: patientData.patients,
-      });
       setPatients(patientData.patients);
       setUsers(userData);
       setTests(data);
@@ -102,37 +96,21 @@ const AddUserReportForm = () => {
       const patientData = await patients.filter(
         (patient) => patient.userId === userId
       );
-      console.log({ patientData });
       patientData.forEach((patient) => {
         if (!testIds.includes(patient.id)) {
           testIds.push(patient.testId);
         }
       });
-      //   console.log("testIds", testIds);
       setPatientId(patientData[0].id);
 
       const testData = tests.filter((test) => testIds.includes(test.id));
-      console.log(testData);
       setTestIndividual(testData);
-
-      //   const testId = patientData[0].testId;
-      //   const testData = await tests.filter((test) => {
-      //     return test.id === testId;
-      //   });
-      //   console.log({ testData });
-      //   if (testData.length > 0) {
-      //     setReport(JSON.stringify(testData[0].measurement));
-      //   }
-      //   setTestIndividual(testData);
     };
     getTest();
   }, [patientInput]);
 
   useEffect(() => {
-    console.log({ testsInput });
-    console.log({ tests });
     const testData = tests.filter((test) => test.name === testsInput);
-    console.log({ testData });
     setReport(
       testData.length > 0 ? JSON.stringify(testData[0].measurement) : ""
     );
@@ -141,14 +119,11 @@ const AddUserReportForm = () => {
 
   const AddUserReport = async (e) => {
     e.preventDefault();
-    console.log({ patientInput });
-    console.log({ patientId, testId, userReportInput });
     const userReport = await AddUserReportAction({
       patientId,
       testId,
       testResult: userReportInput,
     });
-    console.log({ userReport });
     const emailSend = await sendMailUserReport(patientInput);
     if (!emailSend.data.sent) {
         setError("Error while sending notification email to user.")
@@ -190,7 +165,6 @@ const AddUserReportForm = () => {
                   class="form-group"
                   style={{ display: report ? "block" : "none" }}
                 >
-                  {console.log("individual", typeof report)}
                   <TextField
                     multiline
                     className="form-control form-control-lg"

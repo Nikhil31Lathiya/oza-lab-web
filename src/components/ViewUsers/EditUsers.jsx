@@ -52,7 +52,6 @@ const EditUsers = () => {
   const [otpInput, setOtpInput] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  console.log("EditUser", state);
   const edit = async (e) => {
     e.preventDefault();
     if (!otp) {
@@ -78,7 +77,6 @@ const EditUsers = () => {
         email,
         role,
       });
-      console.log(data);
       if (data) {
         navigate("/user/viewUser");
       }
